@@ -6,4 +6,5 @@ localstorage.json
 .notes/
 node_modules/
 build/
-/world*.npmrc
+/world*
+.npmrc
