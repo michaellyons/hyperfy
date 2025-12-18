@@ -68,10 +68,14 @@ export class Volumetric extends Node {
 
     this.material = new THREE.MeshBasicMaterial({
       map: this.texture,
-      side: THREE.FrontSide,
+      side: THREE.DoubleSide,
     })
 
     this.mesh = new THREE.Mesh(this.geometry, this.material)
+
+    this.mesh.castShadow = true
+    this.mesh.receiveShadow = true
+
     this.mesh.position.set(0, 0, 0)
     this.mesh.rotation.y = Math.PI
 
