@@ -26,8 +26,6 @@ export class WebView extends Node {
     this.factor = data.factor
     this.doubleside = data.doubleside
     this.space = data.space
-
-    this.n = 0
   }
 
   copy(source, recursive) {
@@ -52,7 +50,8 @@ export class WebView extends Node {
     }
     if (didMove) {
       if (this.mesh) {
-        this.mesh.matrixWorld.copy(this.matrixWorld)
+        this.matrixWorld.decompose(this.mesh.position, this.mesh.quaternion, this.mesh.scale)
+        this.matrixWorld.decompose(this.objectCSS.position, this.objectCSS.quaternion, this.objectCSS.scale)
       }
       if (this.sItem) {
         this.ctx.world.stage.octree.move(this.sItem)
@@ -77,7 +76,6 @@ export class WebView extends Node {
   }
 
   buildWorld() {
-    const n = ++this.n
     const hasContent = this._src
 
     // Create the black mesh (cutout)
@@ -89,9 +87,7 @@ export class WebView extends Node {
       side: this._doubleside ? THREE.DoubleSide : THREE.FrontSide,
     })
     this.mesh = new THREE.Mesh(geometry, material)
-    this.mesh.matrixWorld.copy(this.matrixWorld)
-    this.mesh.matrixAutoUpdate = false
-    this.mesh.matrixWorldAutoUpdate = false
+    this.matrixWorld.decompose(this.mesh.position, this.mesh.quaternion, this.mesh.scale)
     this.ctx.world.stage.scene.add(this.mesh)
 
     // Add to octree for raycasting
@@ -138,9 +134,8 @@ export class WebView extends Node {
       // Create CSS3DObject
       this.objectCSS = new CSS3DObject(container)
       this.objectCSS.target = this.mesh // important: the mesh to follow
-      this.mesh.updateMatrixWorld()
-      this.mesh.matrixWorld.decompose(this.objectCSS.position, this.objectCSS.quaternion, v1)
-      this.objectCSS.scale.setScalar(1 / this._factor)
+      this.matrixWorld.decompose(this.objectCSS.position, this.objectCSS.quaternion, this.objectCSS.scale)
+      this.objectCSS.scale.multiplyScalar(1 / this._factor)
 
       // Store references
       this.iframe = iframe
@@ -231,7 +226,6 @@ export class WebView extends Node {
   }
 
   unbuild() {
-    this.n++
     // World space cleanup
     if (this.mesh) {
       this.ctx.world.stage.scene.remove(this.mesh)
