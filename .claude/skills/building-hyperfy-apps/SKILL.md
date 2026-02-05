@@ -1,12 +1,9 @@
 ---
-name: hyperfy-skill
+name: building-hyperfy-apps
 description: >
-  Builds 3D apps for Hyperfy virtual worlds. Creates prims, groups,
-  images, audio, video, actions, anchors, particles, and UI. Enforces real-world
-  dimensions, collision physics, and performance best practices. Use when user
-  asks to "build a Hyperfy app", "add a node", "fix physics", "players fall
-  through", "set up multiplayer", "sync state", "objects underground", or
-  "why is this laggy".
+  Build 3D apps for Hyperfy virtual worlds. Use when asked to create prims,
+  physics, multiplayer sync, UI, or fix issues like "players fall through"
+  or "objects underground".
 ---
 
 # Building Hyperfy Apps
@@ -312,12 +309,22 @@ if (world.isClient) {
 
 ---
 
-## Supporting Documentation
+## Reference Documentation
 
-- **[references/node-types.md](references/node-types.md)** - Complete API for all node types
-- **[references/prims-guide.md](references/prims-guide.md)** - Shapes, physics, materials in detail
+**Repository**: https://github.com/hyperfy-xyz/hyperfy
+
+### Skill References (task-oriented guides)
+- **[references/node-types.md](references/node-types.md)** - Consolidated API for all node types
+- **[references/prims-guide.md](references/prims-guide.md)** - Shapes, physics, materials guide
 - **[references/networking-patterns.md](references/networking-patterns.md)** - Multiplayer sync patterns
-- **[references/common-mistakes.md](references/common-mistakes.md)** - Anti-patterns with fixes
+- **[references/common-mistakes.md](references/common-mistakes.md)** - Anti-patterns and fixes
+
+### Official API (for complete property details)
+- **App API**: `docs/scripting/app/App.md`
+- **World API**: `docs/scripting/world/World.md`
+- **Node Types**: `docs/scripting/nodes/` (individual node docs)
+- **Networking**: `docs/scripting/Networking.md`
+- **Utils**: `docs/scripting/Utils.md`
 
 ---
 
