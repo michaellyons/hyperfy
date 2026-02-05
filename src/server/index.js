@@ -36,6 +36,9 @@ if (!process.env.PORT) {
 if (!process.env.JWT_SECRET) {
   throw new Error('[envs] JWT_SECRET not set')
 }
+if (process.env.JWT_SECRET.length < 16) {
+  throw new Error('[envs] JWT_SECRET must be at least 16 characters')
+}
 if (!process.env.ADMIN_CODE) {
   console.warn('[envs] ADMIN_CODE not set - all users will have admin permissions!')
 }
@@ -95,7 +98,9 @@ await world.init({
   collections: collections.list,
 })
 
-fastify.register(cors)
+fastify.register(cors, {
+  origin: process.env.CORS_ORIGIN || true,
+})
 fastify.register(compress)
 fastify.get('/', async (req, reply) => {
   const title = world.settings.title || 'World'
@@ -177,7 +182,7 @@ fastify.get('/api/upload-check', async (req, reply) => {
 })
 
 fastify.get('/api/backup', async (req, reply) => {
-  if (process.env.ADMIN_CODE && req.query.adminCode !== process.env.ADMIN_CODE) {
+  if (!process.env.ADMIN_CODE || req.query.adminCode !== process.env.ADMIN_CODE) {
     return reply.code(401).send({ error: 'Invalid admin code' })
   }
   const zipPath = path.join(rootDir, 'world-backup.zip')
@@ -196,7 +201,7 @@ fastify.get('/api/backup', async (req, reply) => {
 })
 
 fastify.post('/api/restore', async (req, reply) => {
-  if (process.env.ADMIN_CODE && req.query.adminCode !== process.env.ADMIN_CODE) {
+  if (!process.env.ADMIN_CODE || req.query.adminCode !== process.env.ADMIN_CODE) {
     return reply.code(401).send({ error: 'Invalid admin code' })
   }
   const mp = await req.file()
