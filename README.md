@@ -11,6 +11,8 @@
 
 Hyperfy is an open-source framework for building interactive 3D virtual worlds. It combines a powerful physics engine, networked real-time collaboration, and a component-based application system to create immersive experiences that can be self-hosted or connected to the wider Hyperfy ecosystem.
 
+**Tech Stack:** Node.js 22.11.0+, Three.js, PhysX (WASM), Fastify, React 19, esbuild
+
 ## 🧬 Key Features
 
 - **Standalone persistent worlds** - Host on your own domain
@@ -50,6 +52,13 @@ npm run dev
 
 For containerized deployment, check [DOCKER.md](DOCKER.md) for detailed instructions.
 
+### Database
+
+SQLite by default (stored in world folder). For PostgreSQL:
+```bash
+DB_URI=postgresql://user:pass@host:5432/db npm run dev
+```
+
 ## 🧩 Use Cases
 
 - **Virtual Events & Conferences** - Host live gatherings with spatial audio
@@ -69,12 +78,14 @@ For containerized deployment, check [DOCKER.md](DOCKER.md) for detailed instruct
 ## 📏 Project Structure
 
 ```
-docs/              - Documentation and references
 src/
-  client/          - Client-side code and components
-  core/            - Core systems (physics, networking, entities)
-  server/          - Server implementation
-CHANGELOG.md       - Version history and changes
+  client/          - Browser React UI, Three.js rendering
+  core/            - Shared systems (physics, networking, entities)
+  server/          - Fastify HTTP + WebSocket server
+world/             - Runtime world data
+  scene.hyp        - Serialized world state
+  assets/          - Uploaded assets
+docs/              - Documentation and scripting API
 ```
 
 ## 🛠️ Development
@@ -98,9 +109,11 @@ npm run viewer:dev
 # Client only (development)
 npm run client:dev
 
-# Linting
+# Linting & Formatting
 npm run lint
 npm run lint:fix
+npm run format       # Format with Prettier
+npm run check        # Run lint and format together
 ```
 
 ## 🖊️ Contributing
