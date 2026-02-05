@@ -11,8 +11,6 @@
 
 Hyperfy is an open-source framework for building interactive 3D virtual worlds. It combines a powerful physics engine, networked real-time collaboration, and a component-based application system to create immersive experiences that can be self-hosted or connected to the wider Hyperfy ecosystem.
 
-**Tech Stack:** Node.js 22.11.0+, Three.js, PhysX (WASM), Fastify, React 19, esbuild
-
 ## 🧬 Key Features
 
 - **Standalone persistent worlds** - Host on your own domain
@@ -23,7 +21,18 @@ Hyperfy is an open-source framework for building interactive 3D virtual worlds. 
 - **WebXR support** - Experience worlds in VR
 - **Extensible architecture** - Highly customizable for various use cases
 
+**Tech Stack:** Node.js 22.11.0+, Three.js, PhysX (WASM), Fastify, React 19, esbuild
+
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/hyperfy-xyz/hyperfy)
+
+## 🧩 Use Cases
+
+- **Virtual Events & Conferences** - Host live gatherings with spatial audio
+- **Interactive Showrooms** - Create product displays and demos
+- **Social Spaces** - Build community hubs for collaboration
+- **Gaming Environments** - Design immersive game worlds
+- **Educational Experiences** - Develop interactive learning spaces
+- **Creative Showcases** - Display 3D art and interactive installations
 
 ## 🚀 Quick Start
 
@@ -38,7 +47,7 @@ Hyperfy is an open-source framework for building interactive 3D virtual worlds. 
 git clone https://github.com/hyperfy-xyz/hyperfy.git my-world
 cd my-world
 
-# Copy example environment settings
+# Copy example environment settings (and set to your own values)
 cp .env.example .env
 
 # Install dependencies
@@ -48,25 +57,17 @@ npm install
 npm run dev
 ```
 
+Now visit `localhost:3000` in your browser to jump in!
+
 ### Docker Deployment
 
 For containerized deployment, check [DOCKER.md](DOCKER.md) for detailed instructions.
 
-### Database
+### World Folder
 
-SQLite by default (stored in world folder). For PostgreSQL:
-```bash
-DB_URI=postgresql://user:pass@host:5432/db npm run dev
-```
-
-## 🧩 Use Cases
-
-- **Virtual Events & Conferences** - Host live gatherings with spatial audio
-- **Interactive Showrooms** - Create product displays and demos
-- **Social Spaces** - Build community hubs for collaboration
-- **Gaming Environments** - Design immersive game worlds
-- **Educational Experiences** - Develop interactive learning spaces
-- **Creative Showcases** - Display 3D art and interactive installations
+Every edit you make in the world is saved to your world folder which makes it easy to backup/restore.
+A local SQLite db stores all world settings and transforms for apps, and the assets folder includes all uploaded assets.
+You can also have multiple world folders and switch between them by changing the `WORLD` environment variable.
 
 ## 📚 Documentation & Resources
 
@@ -79,12 +80,10 @@ DB_URI=postgresql://user:pass@host:5432/db npm run dev
 
 ```
 src/
-  client/          - Browser React UI, Three.js rendering
-  core/            - Shared systems (physics, networking, entities)
+  core/            - Engine that runs on both client and server
+  client/          - React based browser client
   server/          - Fastify HTTP + WebSocket server
-world/             - Runtime world data
-  scene.hyp        - Serialized world state
-  assets/          - Uploaded assets
+  world/           - Built-in assets (eg character animations), default scene app and app collection
 docs/              - Documentation and scripting API
 ```
 
@@ -99,21 +98,6 @@ npm run dev
 # Production build
 npm run build
 npm start
-
-# Clean orphaned assets (experimental)
-npm run world:clean
-
-# Viewer only (development)
-npm run viewer:dev
-
-# Client only (development)
-npm run client:dev
-
-# Linting & Formatting
-npm run lint
-npm run lint:fix
-npm run format       # Format with Prettier
-npm run check        # Run lint and format together
 ```
 
 ## 🖊️ Contributing
@@ -128,6 +112,5 @@ Contributions are welcome! Please check out our [contributing guidelines](CONTRI
 
 ## 🌱 Project Status
 
-This project is still in alpha as we transition all of our [reference platform](https://github.com/hyperfy-xyz/hyperfy-ref) code into fully self hostable worlds.
-Most features are already here in this repo but still need to be connected up to work with self hosting in mind.
-Note that APIs are highly likely to change during this time.
+This project is in beta.
+Most APIs are stable but there may still be some small breaking changes to apps in the future.
