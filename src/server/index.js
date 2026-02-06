@@ -36,9 +36,6 @@ if (!process.env.PORT) {
 if (!process.env.JWT_SECRET) {
   throw new Error('[envs] JWT_SECRET not set')
 }
-if (process.env.JWT_SECRET.length < 16) {
-  throw new Error('[envs] JWT_SECRET must be at least 16 characters')
-}
 if (!process.env.ADMIN_CODE) {
   console.warn('[envs] ADMIN_CODE not set - all users will have admin permissions!')
 }
