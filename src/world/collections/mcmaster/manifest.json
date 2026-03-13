@@ -1,0 +1,6 @@
+{
+  "name": "McMaster-Carr Museum",
+  "description": "Industrial product museum apps — grounds, display cases, and exhibits",
+  "version": "1.0.0",
+  "apps": ["museum-grounds.js", "display-case.js"]
+}
