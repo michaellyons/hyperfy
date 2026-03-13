@@ -136,6 +136,10 @@ fastify.register(multipart, {
 fastify.register(ws)
 fastify.register(worldNetwork)
 
+// McMaster product catalog API (enabled when CATALOG_DB_URI is set)
+import { mcmasterPlugin } from './mcmaster/index.js'
+fastify.register(mcmasterPlugin)
+
 const publicEnvs = {}
 for (const key in process.env) {
   if (key.startsWith('PUBLIC_')) {

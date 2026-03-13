@@ -1,0 +1,103 @@
+version: "3.9"
+
+# McMaster Museum — Local development stack
+#
+#   npm run dev     (Hyperfy world server + hot reload)
+#   docker compose up -d postgres   (just the DB)
+#   docker compose up                (full stack)
+
+services:
+  # ── Postgres (world data + McMaster catalog) ────────────────────────────────
+  postgres:
+    image: ankane/pgvector:latest     # includes pgvector for semantic search
+    container_name: museum-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       museum
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-museum_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/db/mcmaster-schema.sql:/docker-entrypoint-initdb.d/01-mcmaster-schema.sql:ro
+    healthcheck:
+      test:     ["CMD-SHELL", "pg_isready -U postgres -d museum"]
+      interval: 5s
+      timeout:  5s
+      retries:  5
+    networks:
+      - museum
+
+  # ── Hyperfy world server ────────────────────────────────────────────────────
+  world:
+    build:
+      context:    .
+      dockerfile: Dockerfile
+      target:     production
+    container_name: museum-world
+    restart:    unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV:    production
+      PORT:        3000
+      WORLD:       worlds/global
+
+      # Hyperfy world DB (SQLite inside the container — overridden to Postgres in prod)
+      DB_URI:      ${DB_URI:-local}
+
+      # McMaster catalog DB
+      CATALOG_DB_URI: postgres://postgres:${DB_PASSWORD:-museum_dev}@postgres:5432/museum
+
+      JWT_SECRET:  ${JWT_SECRET:-dev-secret-change-in-prod}
+      ADMIN_CODE:  ${ADMIN_CODE:-}
+      SAVE_INTERVAL: 60
+      CLEAN:       true
+
+      PUBLIC_PLAYER_COLLISION: false
+      PUBLIC_MAX_UPLOAD_SIZE:  50
+      PUBLIC_WS_URL:   ${PUBLIC_WS_URL:-ws://localhost:3000/ws}
+      PUBLIC_API_URL:  ${PUBLIC_API_URL:-http://localhost:3000/api}
+
+      ASSETS:          local
+      ASSETS_BASE_URL: ${ASSETS_BASE_URL:-http://localhost:3000/assets}
+
+      # McMaster API (optional)
+      MCMASTER_USERNAME:     ${MCMASTER_USERNAME:-}
+      MCMASTER_PASSWORD:     ${MCMASTER_PASSWORD:-}
+      MCMASTER_CERT_PATH:    ${MCMASTER_CERT_PATH:-}
+      MCMASTER_CERT_PASSWORD: ${MCMASTER_CERT_PASSWORD:-}
+
+      # AI generation (optional)
+      TRIPO3D_API_KEY: ${TRIPO3D_API_KEY:-}
+      MESHY_API_KEY:   ${MESHY_API_KEY:-}
+      OPENAI_API_KEY:  ${OPENAI_API_KEY:-}
+
+      # LiveKit voice (optional)
+      LIVEKIT_WS_URL:     ${LIVEKIT_WS_URL:-}
+      LIVEKIT_API_KEY:    ${LIVEKIT_API_KEY:-}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:-}
+
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./worlds:/app/worlds           # persist world data
+      - world_assets:/app/worlds/global/assets
+    networks:
+      - museum
+    healthcheck:
+      test:         ["CMD-SHELL", "curl -sf http://localhost:3000/status || exit 1"]
+      interval:     30s
+      timeout:      10s
+      start_period: 60s
+      retries:      3
+
+volumes:
+  postgres_data:
+  world_assets:
+
+networks:
+  museum:
+    driver: bridge
